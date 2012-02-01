@@ -53,11 +53,11 @@ rule
 	pseudo_operator:
 		'.' identifer exprs EOL
 		{
-			result = [val[1], val[2]];
+			result = PseudoOperator::CommandOperator.new(val[1], val[2]);
 		}
 		| '.' identifer EOL
 		{
-			result = [val[1]];
+			result = PseudoOperator::CommandOperator.new(val[1]);
 		}
 		;
 	operator:

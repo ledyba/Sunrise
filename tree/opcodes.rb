@@ -42,9 +42,9 @@ module ParserInner::Opcode
 		end
 		def inspect
 			if @operand.nil?
-				return "#{@name}(0x#{@byte.to_s(16)})"
+				return "OP: #{@name}(0x#{@byte.to_s(16)})"
 			else
-				return "#{@name}(0x#{@byte.to_s(16)}) #{@operand.inspect}"
+				return "OP: #{@name}(0x#{@byte.to_s(16)}) #{@operand.inspect}"
 			end
 		end
 	end

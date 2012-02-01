@@ -2,6 +2,7 @@
 require File.dirname(__FILE__)+"/../tree/tree.rb"
 require File.dirname(__FILE__)+"/../tree/opcodes.rb"
 require File.dirname(__FILE__)+"/../tree/operands.rb"
+require File.dirname(__FILE__)+"/../tree/pseudo_operator.rb"
 
 require 'logger'
 require 'strscan'

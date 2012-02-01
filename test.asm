@@ -1,4 +1,5 @@
 .test 0x12, aa, a
+;テスト
 :testt ;cvom
 	lda 12
 	lda [0b11]

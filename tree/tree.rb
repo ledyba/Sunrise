@@ -59,7 +59,11 @@ module ParserInner::Tree
 			end
 		end
 		def inspect
-			return "Routine: <#{@name.inspect}> -> #{@ops.inspect}";
+			if @name.nil?
+				return "Routine: <noname> -> #{@ops.inspect}";
+			else
+				return "Routine: \"#{@name}\" -> #{@ops.inspect}";
+			end
 		end
 	end
 end
