@@ -1,0 +1,161 @@
+class Parser
+rule
+	program:
+		| operators routines
+		{
+			val[1].unshift Tree::RoutineNode.new(nil, val[0]);
+			result = val[1];
+		}
+		| routines
+		{
+			result = val[0];
+		}
+		;
+
+	routines:
+		routine routines
+		{
+			val[1].unshift val[0];
+			result = val[1];
+		}
+		| routine
+		{
+			result = [val[0]];
+		}
+		;
+
+	routine:
+		':' identifer EOL operators
+		{
+			result = Tree::RoutineNode.new(val[1], val[3]);
+		}
+		;
+	operators:
+		operator operators
+		{
+			val[1].unshift val[0];
+			result = val[1];
+		}
+		| pseudo_operator operators
+		{
+			val[1].unshift val[0];
+			result = val[1];
+		}
+		| operator
+		{
+			result = [val[0]];
+		}
+		| pseudo_operator
+		{
+			result = [val[0]];
+		}
+		;
+	pseudo_operator:
+		'.' identifer exprs EOL
+		{
+			result = [val[1], val[2]];
+		}
+		| '.' identifer EOL
+		{
+			result = [val[1]];
+		}
+		;
+	operator:
+		opcode EOL
+		{
+			result = ParserInner::Opcode.create(val[0], nil);
+		}
+		| opcode operand EOL
+		{
+			result = Opcode.create val[0], val[1]
+		}
+		;
+	opcode: identifer;
+	operand: 
+		expr
+		{
+			result = Operand::ImmediateOperand.new(val[0]);
+		}
+		| '[' expr ']'
+		{
+			result = Operand::ZeropageOperand.new(val[1]);
+		}
+		| '[' expr ',' reg ']'
+		{
+			case val[3]
+			when :REG_X
+			result = Operand::ZeropageOperand.new(val[1], Operand::X);
+			when :REG_Y
+			result = Operand::ZeropageOperand.new(val[1], Operand::Y);
+			end
+		}
+		| '<' expr '>'
+		{
+			result = Operand::AbsoluteOperand.new(val[1]);
+		}
+		| '<' expr ',' reg '>'
+		{
+			case val[3]
+			when :REG_X
+			result = Operand::AbsoluteOperand.new(val[1], Operand::X);
+			when :REG_Y
+			result = Operand::AbsoluteOperand.new(val[1], Operand::Y);
+			end
+		}
+		| '(' expr ')'
+		{
+			result = Operand::IndirectOperand.new(val[1]);
+		}
+		| '(' expr ',' REG_X ')'
+		{
+			result = Operand::IndirectOperand.new(val[1], Operand::X);
+		}
+		| '(' expr ')' ',' REG_Y
+		{
+			result = Operand::IndirectOperand.new(val[1], Operand::Y);
+		}
+		;
+	reg: REG_X | REG_Y;
+	exprs:
+		expr ',' exprs
+		{
+			val[2].append(val[0]);
+			result = val[2];
+		}
+		| expr
+		{
+			result = Tree::ExprListNode.new(val[0]);
+		}
+		;
+	expr:
+		immediate
+		| identifer
+		;
+	identifer:
+		IDENT
+		{
+			result = Tree::IdentiferNode.new(val[0]);
+		}
+		;
+	immediate:
+		HEX_NUMBER
+		{
+			result = Tree::ImmediateNode.new(val[0], 16);
+		}
+		| DECI_NUMBER
+		{
+			result = Tree::ImmediateNode.new(val[0], 10);
+		}
+		| BIN_NUMBER
+		{
+			result = Tree::ImmediateNode.new(val[0], 2);
+		}
+		;
+token IDENT HEX_NUMBER DECI_NUMBER BIN_NUMBER EOL REG_X REG_Y
+end
+---- header
+# -*- encoding: utf-8 -*-
+require File.dirname(__FILE__)+"/parser_inner.rb"
+---- inner
+include ParserInner
+
