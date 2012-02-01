@@ -32,7 +32,7 @@ module ParserInner::Opcode
 	end
 	class NormalOpcode < AbstractOpcode
 		def initialize(name, byte, operand)
-			super(:normal, operand.size);
+			super(:normal, operand.size+1); #オペランド＋オペコード１バイト
 			@name = name;
 			@byte = byte;
 			@operand = operand;
@@ -50,7 +50,7 @@ module ParserInner::Opcode
 	end
 	class JumpOpcode < AbstractOpcode
 		def initialize(name, byte, operand)
-			super(:jump, operand.size);
+			super(:jump, operand.size+1); #オペランド＋オペコード１バイト
 		end
 	end
 end
