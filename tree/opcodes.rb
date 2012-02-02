@@ -24,15 +24,17 @@ module ParserInner::Opcode
 		end
 	end
 	class AbstractOpcode
-		def initialize(type, size)
+		def initialize(type, min_size, max_size)
 			@type = type;
-			@size = size;
+			@min_size = min_size;
+			@max_size = max_size;
 		end
-		attr_reader :type, :size;
+		attr_reader :type, :max_size, :min_size;
 	end
 	class NormalOpcode < AbstractOpcode
 		def initialize(name, byte, operand)
-			super(:normal, operand.size+1); #オペランド＋オペコード１バイト
+			#命令は増減しない。
+			super(:normal, operand.size+1, operand.size+1);
 			@name = name;
 			@byte = byte;
 			@operand = operand;
@@ -50,7 +52,9 @@ module ParserInner::Opcode
 	end
 	class JumpOpcode < AbstractOpcode
 		def initialize(name, byte, operand)
-			super(:jump, operand.size+1); #オペランド＋オペコード１バイト
+			#最小：このジャンプ命令だけ
+			#最大：反転ジャンプ命令＋絶対ジャンプ
+			super(:jump, operand.size+1, operand.size+1+(1+2));
 		end
 	end
 end

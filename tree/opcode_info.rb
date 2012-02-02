@@ -711,4 +711,14 @@ module ParserInner::Opcode
 			:Immediate => 0x70,
 		}
 	};
+	JUMP_INVERT_TABLE = {
+		:BCC => :BCS,
+		:BCS => :BCC,
+		:BEQ => :BNE,
+		:BNE => :BEQ,
+		:BPL => :BMI,
+		:BMI => :BPL,
+		:BVC => :BVS,
+		:BVS => :BVC
+	};
 end
