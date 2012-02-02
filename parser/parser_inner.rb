@@ -8,6 +8,12 @@ require 'logger'
 require 'strscan'
 
 module ParserInner
+	private
+	RAND_TABLE = ('a'..'z').to_a + ('A'..'Z').to_a.to_a;
+	def randIdent(len)
+		return Array.new(len){RAND_TABLE[rand(RAND_TABLE.size)]}.join
+	end
+	public
 	def parse(str)
 		ss = StringScanner.new(str+"\n")
 		@tokens = [];
@@ -31,7 +37,7 @@ module ParserInner
 				@tokens.push [:REG_X, :REG_X]
 			when ss.scan(/[Yy]/)
 				@tokens.push [:REG_Y, :REG_Y]
-			when ss.scan(/[\w!\$\%\&\*\+\-\/\?@^_~]+/)
+			when ss.scan(/[\w\$\%\&\*\+\-\\\/\?@^_~]+/)
 				@tokens.push [:IDENT, ss[0].to_sym]
 			else
 				s = ss.getch;

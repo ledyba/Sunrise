@@ -3,8 +3,24 @@ module ParserInner
 end
 module ParserInner::Tree
 	class AbstractNode
+		def to_s
+			raise "Must implement"
+		end
+		def inspect
+			raise "Must implement"
+		end
 	end
+
 	class OperatorNode < AbstractNode
+		def pre_eval(env, scope)
+			raise "Must implement"
+		end
+		def eval(env, scope)
+			raise "Must implement"
+		end
+		def post_eval(env, scope)
+			raise "Must implement"
+		end
 	end
 	class ExprNode < AbstractNode
 		def initialize(canReduce)
@@ -12,6 +28,7 @@ module ParserInner::Tree
 		end
 		attr_reader :canReduce
 	end
+
 	class ImmediateNode < ExprNode
 		def initialize(number_str, radix)
 			super(false);
@@ -37,45 +54,42 @@ module ParserInner::Tree
 			return @sym
 		end
 		def inspect
-			return "<Ident: #{@sym}>";
+			return "<Ident: \"#{@sym}\">";
 		end
 	end
 	class ExprListNode < AbstractNode
 		def initialize(first = nil)
 			@nodes = [];
-			@nodes << first unless first.nil?
+			appendPre(first) unless first.nil?
 		end
-		def append(node)
-			@nodes << node;
+		def appendPre(node)
+			raise "Invalid type" unless node.is_a? ExprNode
+			@nodes.unshift node;
 		end
 		def to_s
-			return @nodes.to_s;
+			return "<ExprList: #{@nodes.inspect}";
 		end
 		def inspect
-			return "<ExprList: #{@nodes.inspect}>";
+			to_s
 		end
 	end
 	class RoutineNode < AbstractNode
 		def initialize(name, ops)
+			raise "Routine name must be specified" if name.nil?
 			@name = name;
 			@ops = ops;
+			@ops.each{|op|
+				raise "Invalid type" unless op.is_a? OperatorNode
+			}
 		end
 		def to_s
 			return "Routine: #{@name.inspect}";
 		end
 		def to_sym
-			if @name.nil?
-				return nil;
-			else
-				return @name.to_sym;
-			end
+			return @name.to_sym;
 		end
 		def inspect
-			if @name.nil?
-				return "Routine: <noname> -> #{@ops.inspect}";
-			else
-				return "Routine: \"#{@name}\" -> #{@ops.inspect}";
-			end
+			return "Routine: \"#{@name}\" -> #{@ops.inspect}";
 		end
 	end
 end

@@ -23,7 +23,7 @@ module ParserInner::Tree::Operand
 			@node.to_s
 		end
 		def inspect
-			"{Imm: #{@node.inspect}}"
+			"{ImmOp: \"#{@node.inspect}\"}"
 		end
 	end
 	class AbsoluteOperand < AbstractOperand
@@ -42,9 +42,9 @@ module ParserInner::Tree::Operand
 		end
 		def inspect
 			if @reg.nil?
-				"{Absolite: #{@node.inspect}}"
+				"{AbsOp: \"#{@node.inspect}\"}"
 			else
-				"{Absolite(#{@reg}): #{@node.inspect}}"
+				"{AbsOp(#{@reg}): \"#{@node.inspect}\"}"
 			end
 		end
 	end
@@ -64,9 +64,9 @@ module ParserInner::Tree::Operand
 		end
 		def inspect
 			if @reg.nil?
-				"{Zero: #{@node.inspect}}"
+				"{ZeroOp: \"#{@node.inspect}\"}"
 			else
-				"{Zero(#{@reg}): #{@node.inspect}}"
+				"{ZeroOp(#{@reg}): \"#{@node.inspect}\"}"
 			end
 		end
 	end
@@ -86,9 +86,9 @@ module ParserInner::Tree::Operand
 		end
 		def inspect
 			if @reg.nil?
-				"{Ind: #{@node.inspect}}"
+				"{IndOp: \"#{@node.inspect}}\""
 			else
-				"{Ind(#{@reg}): #{@node.inspect}}"
+				"{IndOp(#{@reg}): \"#{@node.inspect}\"}"
 			end
 		end
 	end

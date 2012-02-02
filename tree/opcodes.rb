@@ -26,7 +26,8 @@ module ParserInner::Tree::Opcode
 			return nil
 		end
 	end
-	class AbstractOpcode
+
+	class AbstractOpcode < ::ParserInner::Tree::OperatorNode
 		def initialize(type, min_size, max_size)
 			@type = type;
 			@min_size = min_size;
@@ -34,6 +35,7 @@ module ParserInner::Tree::Opcode
 		end
 		attr_reader :type, :max_size, :min_size;
 	end
+
 	class NormalOpcode < AbstractOpcode
 		def initialize(name, byte, operand)
 			#命令は増減しない。

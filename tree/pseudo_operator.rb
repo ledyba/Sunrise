@@ -5,7 +5,7 @@ end
 module ParserInner::Tree
 end
 module ParserInner::Tree::PseudoOperator
-	class AbstractPseudoOperator < ParserInner::Tree::OperatorNode
+	class AbstractPseudoOperator < ::ParserInner::Tree::OperatorNode
 	end
 	class CommandOperator < AbstractPseudoOperator
 		def initialize(code, args = nil)

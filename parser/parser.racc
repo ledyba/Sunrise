@@ -4,9 +4,9 @@ token IDENT HEX_NUMBER DECI_NUMBER BIN_NUMBER EOL REG_X REG_Y
 
 rule
 	program:
-		| operators routines
+		| top_pseudo_operators routines
 		{
-			val[1].unshift Tree::RoutineNode.new(nil, val[0]);
+			val[1].unshift Tree::RoutineNode.new('__top__'+randIdent(10)+'__', val[0]);
 			result = val[1];
 		}
 		| routines
@@ -14,7 +14,19 @@ rule
 			result = val[0];
 		}
 		;
+	top_pseudo_operators:
+		pseudo_operator top_pseudo_operators
+		{
+			val[1].unshift val[0];
+			result = val[1];
+		}
+		| pseudo_operator
+		{
+			result = [val[0]];
+		}
+		;
 
+		;
 	routines:
 		routine routines
 		{
@@ -122,7 +134,7 @@ rule
 	exprs:
 		expr ',' exprs
 		{
-			val[2].append(val[0]);
+			val[2].appendPre(val[0]);
 			result = val[2];
 		}
 		| expr
