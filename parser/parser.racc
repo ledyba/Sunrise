@@ -1,4 +1,7 @@
 class Parser
+
+token IDENT HEX_NUMBER DECI_NUMBER BIN_NUMBER EOL REG_X REG_Y
+
 rule
 	program:
 		| operators routines
@@ -151,7 +154,6 @@ rule
 			result = Tree::ImmediateNode.new(val[0], 2);
 		}
 		;
-token IDENT HEX_NUMBER DECI_NUMBER BIN_NUMBER EOL REG_X REG_Y
 end
 ---- header
 # -*- encoding: utf-8 -*-
