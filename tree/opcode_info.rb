@@ -1,7 +1,11 @@
 # -*- encoding: utf-8 -*-
+require File.dirname(__FILE__)+"/tree.rb";
+require File.dirname(__FILE__)+"/opcodes.rb";
 module ParserInner
 end
-module ParserInner::Opcode
+module ParserInner::Tree
+end
+module ParserInner::Tree::Opcode
 	NORMAL_OPCODE_TABLE = {
 		:LDA => 
 		{

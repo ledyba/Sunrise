@@ -2,8 +2,19 @@
 module ParserInner
 end
 module ParserInner::Tree
-	class ImmediateNode
+	class AbstractNode
+	end
+	class OperatorNode < AbstractNode
+	end
+	class ExprNode < AbstractNode
+		def initialize(canReduce)
+			@canReduce = canReduce;
+		end
+		attr_reader :canReduce
+	end
+	class ImmediateNode < ExprNode
 		def initialize(number_str, radix)
+			super(false);
 			@num = number_str.to_i(radix);
 			@str = number_str;
 		end
@@ -14,8 +25,9 @@ module ParserInner::Tree
 			return "<Immediate: #{@str}(#{@num})>";
 		end
 	end
-	class IdentiferNode
+	class IdentiferNode < ExprNode
 		def initialize(sym)
+			super(true);
 			@sym = sym;
 		end
 		def to_s
@@ -28,7 +40,7 @@ module ParserInner::Tree
 			return "<Ident: #{@sym}>";
 		end
 	end
-	class ExprListNode
+	class ExprListNode < AbstractNode
 		def initialize(first = nil)
 			@nodes = [];
 			@nodes << first unless first.nil?
@@ -43,7 +55,7 @@ module ParserInner::Tree
 			return "<ExprList: #{@nodes.inspect}>";
 		end
 	end
-	class RoutineNode
+	class RoutineNode < AbstractNode
 		def initialize(name, ops)
 			@name = name;
 			@ops = ops;

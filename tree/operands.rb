@@ -1,7 +1,10 @@
 # -*- encoding: utf-8 -*-
+require File.dirname(__FILE__)+"/tree.rb";
 module ParserInner
 end
-module ParserInner::Operand
+module ParserInner::Tree
+end
+module ParserInner::Tree::Operand
 	X = :X;
 	Y = :Y;
 	class AbstractOperand

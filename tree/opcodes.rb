@@ -1,8 +1,11 @@
 # -*- encoding: utf-8 -*-
+require File.dirname(__FILE__)+"/tree.rb";
 require File.dirname(__FILE__)+"/opcode_info.rb"
 module ParserInner
 end
-module ParserInner::Opcode
+module ParserInner::Tree
+end
+module ParserInner::Tree::Opcode
 	def self.create(name, operand)
 		upper_sym = name.to_s.upcase.to_sym;
 		op_type = operand.type || :nil
@@ -55,6 +58,9 @@ module ParserInner::Opcode
 			#最小：このジャンプ命令だけ
 			#最大：反転ジャンプ命令＋絶対ジャンプ
 			super(:jump, operand.size+1, operand.size+1+(1+2));
+			@name = name;
+			@byte = byte;
+			@operand = operand;
 		end
 	end
 end

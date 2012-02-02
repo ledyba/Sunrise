@@ -1,8 +1,13 @@
 # -*- encoding: utf-8 -*-
+require File.dirname(__FILE__)+"/tree.rb";
 module ParserInner
 end
-module ParserInner::PseudoOperator
-	class CommandOperator
+module ParserInner::Tree
+end
+module ParserInner::Tree::PseudoOperator
+	class AbstractPseudoOperator < ParserInner::Tree::OperatorNode
+	end
+	class CommandOperator < AbstractPseudoOperator
 		def initialize(code, args = nil)
 			@code = code;
 			@args = args;
@@ -16,3 +21,4 @@ module ParserInner::PseudoOperator
 	end
 end
 
+require File.dirname(__FILE__)+"/pseudo_operator_commands.rb";

@@ -56,66 +56,66 @@ rule
 	pseudo_operator:
 		'.' identifer exprs EOL
 		{
-			result = PseudoOperator::CommandOperator.new(val[1], val[2]);
+			result = Tree::PseudoOperator::CommandOperator.new(val[1], val[2]);
 		}
 		| '.' identifer EOL
 		{
-			result = PseudoOperator::CommandOperator.new(val[1]);
+			result = Tree::PseudoOperator::CommandOperator.new(val[1]);
 		}
 		;
 	operator:
 		opcode EOL
 		{
-			result = ParserInner::Opcode.create(val[0], nil);
+			result = Tree::Opcode.create val[0], nil
 		}
 		| opcode operand EOL
 		{
-			result = Opcode.create val[0], val[1]
+			result = Tree::Opcode.create val[0], val[1]
 		}
 		;
 	opcode: identifer;
 	operand: 
 		expr
 		{
-			result = Operand::ImmediateOperand.new(val[0]);
+			result = Tree::Operand::ImmediateOperand.new(val[0]);
 		}
 		| '[' expr ']'
 		{
-			result = Operand::ZeropageOperand.new(val[1]);
+			result = Tree::Operand::ZeropageOperand.new(val[1]);
 		}
 		| '[' expr ',' reg ']'
 		{
 			case val[3]
 			when :REG_X
-			result = Operand::ZeropageOperand.new(val[1], Operand::X);
+			result = Tree::Operand::ZeropageOperand.new(val[1], Tree::Operand::X);
 			when :REG_Y
-			result = Operand::ZeropageOperand.new(val[1], Operand::Y);
+			result = Tree::Operand::ZeropageOperand.new(val[1], Tree::Operand::Y);
 			end
 		}
 		| '<' expr '>'
 		{
-			result = Operand::AbsoluteOperand.new(val[1]);
+			result = Tree::Operand::AbsoluteOperand.new(val[1]);
 		}
 		| '<' expr ',' reg '>'
 		{
 			case val[3]
 			when :REG_X
-			result = Operand::AbsoluteOperand.new(val[1], Operand::X);
+			result = Tree::Operand::AbsoluteOperand.new(val[1], Tree::Operand::X);
 			when :REG_Y
-			result = Operand::AbsoluteOperand.new(val[1], Operand::Y);
+			result = Tree::Operand::AbsoluteOperand.new(val[1], Tree::Operand::Y);
 			end
 		}
 		| '(' expr ')'
 		{
-			result = Operand::IndirectOperand.new(val[1]);
+			result = Tree::Operand::IndirectOperand.new(val[1]);
 		}
 		| '(' expr ',' REG_X ')'
 		{
-			result = Operand::IndirectOperand.new(val[1], Operand::X);
+			result = Tree::Operand::IndirectOperand.new(val[1], Tree::Operand::X);
 		}
 		| '(' expr ')' ',' REG_Y
 		{
-			result = Operand::IndirectOperand.new(val[1], Operand::Y);
+			result = Tree::Operand::IndirectOperand.new(val[1], Tree::Operand::Y);
 		}
 		;
 	reg: REG_X | REG_Y;
