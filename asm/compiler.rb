@@ -12,12 +12,14 @@ class Asm::Compiler
 		@scope.appendRoutines(tree_list);
 	end
 	def compile()
+		state = ::Asm::PrepareState.new(@scope);
 		for routine in @scope.routines
-			routine.prepare @scope
+			state.startRoutine(routine);
+			routine.prepare(@scope, state)
 		end
 		obj = [];
 		for routine in @scope.routines
-			obj += routine.to_bin(@scope)
+			obj += routine.to_bin(@scope, state)
 		end
 		codeList = [::Asm::Nes::Code.new(obj, 0, 0, 0)]
 		return ::Asm::Nes::Linker.new(codeList, nil);

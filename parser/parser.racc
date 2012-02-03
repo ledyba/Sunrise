@@ -78,7 +78,7 @@ rule
 	operator:
 		opcode EOL
 		{
-			result = Tree::Opcode.create val[0], nil
+			result = Tree::Opcode.create val[0], Tree::Operand::NilOperand.new()
 		}
 		| opcode operand EOL
 		{

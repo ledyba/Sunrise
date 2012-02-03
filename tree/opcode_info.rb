@@ -652,8 +652,6 @@ module ParserInner::Tree::Opcode
 			:IndirectY => nil,
 			:nil => 0x40
 		},
-	};
-	JUMP_OPCODE_TABLE={
 		:JMP => 
 		{
 			:Immediate => nil,
@@ -682,6 +680,8 @@ module ParserInner::Tree::Opcode
 			:IndirectY => nil,
 			:nil => nil
 		},
+	};
+	JUMP_OPCODE_TABLE={
 		:BCC => 
 		{
 			:Immediate => 0x90,

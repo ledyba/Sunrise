@@ -6,7 +6,7 @@ module ParserInner::Tree
 		def to_s
 			raise "Must implement"
 		end
-		def to_bin(scope)
+		def to_bin(scope, state)
 			raise "Must implement"
 		end
 		def inspect
@@ -15,15 +15,15 @@ module ParserInner::Tree
 	end
 
 	class OperatorNode < AbstractNode
-		def prepare(scope)
+		def prepare(scope, state)
 			raise "Must implement"
 		end
 	end
 	class ExprNode < AbstractNode
-		def initialize(canReduce)
-			@canReduce = canReduce;
+		def initialize(needResolve)
+			@needResolve = needResolve
 		end
-		attr_reader :canReduce
+		attr_reader :needResolve
 	end
 
 	class ImmediateNode < ExprNode
@@ -41,7 +41,7 @@ module ParserInner::Tree
 		def to_i()
 			return @num;
 		end
-		def to_bin(scope, as = :word)
+		def to_bin(scope, state, as = :word)
 			if is_word() && as == :word
 				return [@num & 0xff];
 			elsif as == :dword
@@ -51,10 +51,10 @@ module ParserInner::Tree
 			end
 		end
 		def is_word()
-			return @num < 256;
+			return @num >= 0 && @num < 256;
 		end
 		def is_dword()
-			return @num < 65536;
+			return @num >= 0 && @num < 65536;
 		end
 		def inspect()
 			return "<Immediate: #{@str}(#{@num})>";
@@ -100,18 +100,18 @@ module ParserInner::Tree
 			@name = name;
 			@ops = ops;
 			@ops.each{|op|
-				raise "Invalid type" unless op.is_a? OperatorNode
+				raise "Invalid type: #{op.class}" unless op.is_a? OperatorNode
 			}
 		end
-		def prepare(scope)
+		def prepare(scope, state)
 			for op in @ops
-				op.prepare scope
+				op.prepare scope, state
 			end
 		end
-		def to_bin(scope)
+		def to_bin(scope, state)
 			obj = [];
 			for op in @ops
-				obj += op.to_bin(scope)
+				obj += op.to_bin(scope, state)
 			end
 			return obj
 		end

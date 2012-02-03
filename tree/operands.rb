@@ -17,14 +17,30 @@ module ParserInner::Tree::Operand
 		def to_s
 			@node.to_s
 		end
-		def to_bin(scope)
-			if @size == 1
-				return @node.to_bin(scope, :word)
+		def to_bin(scope, state)
+			if @size == 0
+				return [];
+			elsif @size == 1
+				return @node.to_bin(scope, state, :word)
 			elsif @size == 2
-				return @node.to_bin(scope, :dword)
+				return @node.to_bin(scope, state, :dword)
 			else
 				raise "Invalid length: #{@size}"
 			end
+		end
+	end
+	class NilOperand < AbstractOperand
+		def initialize()
+			super(:nil, 0, nil);
+		end
+		def nil?
+			return true;
+		end
+		def inspect
+			"{NilOp}"
+		end
+		def to_s
+			"{NilOp}"
 		end
 	end
 	class ImmediateOperand < AbstractOperand

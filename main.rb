@@ -12,8 +12,8 @@ def main(argv)
 			treeList = parser.parse(f.read);
 			compiler.readTree(treeList);
 		}
-	}
-	compiler.compile().save("compiled.bin");
+	};
+	compiler.compile().save("compiled.nes");
 end
 
 main(ARGV);
