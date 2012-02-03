@@ -1,23 +1,45 @@
 # -*- encoding: utf-8 -*-
+require File.dirname(__FILE__)+"/../tree/tree.rb";
 module Asm
 end
 class Asm::Scope
-	def initialize()
+	def initialize(code_base)
+		@code_base = code_base
 		@routines = [];
-		@routineIndexTable = {};
+		@routineAddrTable = {};
+		@fairy = ::Asm::RoutineFairy.new(self);
 		@constants = {};
+		@config = {};
 	end
-	attr_reader :routines
-	def appendRoutines(routines)
-		for routine in routines
-			raise "Invalid type:#{routine.class}" unless routine.is_a? ::Parser::Tree::RoutineNode
-			if @routineIndexTable.has_key? routine.to_sym;
-				raise "Routine: \"#{routine}\" already defined.";
-			end
-			@routineIndexTable[routine.to_sym] = @routines.size
-			@routines << routine;
-			self.appendConstant(routine.nameIdent, nil);
+	def setConfig(name, value)
+		name = name.to_sym
+		if @config.has_key? name
+			raise "Already defined config: #{name} = #{@config[name]}(=>#{value})";
 		end
+		@config[name] = value;
+	end
+	attr_reader :routines, :fairy
+	def <<(routines)
+		@routines += routines;
+	end
+	def has_routine?(name)
+		return @routines.any?{|routine| routine.to_sym == name.to_sym}
+	end
+	def fixRoutines()
+		@fairy.freeze
+		for routine in @routines
+			addr = @fairy.resolveOffset(routine)+@code_base
+			imm_node = ::ParserInner::Tree::ImmediateNode.new(addr);
+			appendConstant(routine.nameIdent, imm_node);
+			@routineAddrTable[routine.to_sym] = addr
+			routine.fix_addr(addr)
+		end
+	end
+	def resolveConfig(name)
+		return @config[name.to_sym];
+	end
+	def resolveRoutineAddr(routine)
+		return @routineAddrTable[routine.to_sym]
 	end
 	def appendConstant(identifer, val)
 		if @constants.has_key? identifer.to_sym;
@@ -26,7 +48,10 @@ class Asm::Scope
 		@constants[identifer.to_sym] = val;
 		nil
 	end
-	def resovleConstant(identifer)
+	def resolveConstant(identifer)
+		unless identifer.needResolve
+			return identifer
+		end
 		unless @constants.has_key? identifer.to_sym
 			raise "Not defined: #{identifer}";
 		end
@@ -38,7 +63,7 @@ class Asm::Scope
 		end
 	end
 end
-class Asm::PrepareState
+class Asm::RoutineFairy
 	def initialize(scope)
 		@scope = scope;
 		@minOffset = 0;
@@ -50,22 +75,28 @@ class Asm::PrepareState
 		raise "#{min} > #{max}" if min > max
 		@minOffset += min;
 		@maxOffset += max;
-		puts "#{@minOffset}, #{@maxOffset}"
 	end
-	def startRoutine(routine)
+	def start(routine)
 		@tempRoutineMinOffsets[routine.to_sym] = @minOffset
 		@tempRoutineMaxOffsets[routine.to_sym] = @maxOffset
 	end
 	def resolveDistance(routine)
-		unless @tempRoutineMinOffsets.has_key?(routine.to_sym) || @tempRoutineMaxOffsets.has_key?(routine.to_sym)
+		sym = routine.to_sym;
+		unless @tempRoutineMinOffsets.has_key?(sym) && @tempRoutineMaxOffsets.has_key?(sym)
 			return nil
 		end
-		rmin = @tempRoutineMinOffsets[routine.to_sym];
-		rmax = @tempRoutineMaxOffsets[routine.to_sym];
+		rmin = @tempRoutineMinOffsets[sym];
+		rmax = @tempRoutineMaxOffsets[sym];
 		dist = [rmin-@minOffset, rmax-@minOffset, rmin-@maxOffset, rmax-@maxOffset].min_by{|t|
 			-t.abs
 		}
 		return dist;
+	end
+	def resolveOffset(routine)
+		unless frozen?
+			raise "not fixed yet."
+		end
+		return @tempRoutineMaxOffsets[routine.to_sym];
 	end
 	def reset
 		@minOffset = 0;

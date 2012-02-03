@@ -1,8 +1,13 @@
 .test 0x12, aa, a
 ;テスト
-:test ;cvom
+:nmi_handler
+	rti
+:irq_handler
+	rti
+:entry_point ;cvom
 	lda 12
 	lda [0b11]
+	beq test2
 	nop
 	nop
 	nop
@@ -145,5 +150,4 @@
 ;	lda edx
 
 :test2
-	nop
-	beq test
+	beq entry_point

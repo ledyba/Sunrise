@@ -18,9 +18,9 @@ module ParserInner::Tree::PseudoOperator
 		def inspect
 			"CMD: #{@code.to_s} with #{@args.inspect}"
 		end
-		def prepare(scope, state)
+		def prepare(scope)
 		end
-		def to_bin(scope, state)
+		def to_bin(fairy)
 			[]
 		end
 	end

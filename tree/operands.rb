@@ -17,13 +17,15 @@ module ParserInner::Tree::Operand
 		def to_s
 			@node.to_s
 		end
-		def to_bin(scope, state)
-			if @size == 0
-				return [];
-			elsif @size == 1
-				return @node.to_bin(scope, state, :word)
+		def to_bin(scope)
+			if @node.nil? || @size == 0
+				return []
+			end
+			node = scope.resolveConstant(@node)
+			if @size == 1
+				return node.to_bin(scope, :word)
 			elsif @size == 2
-				return @node.to_bin(scope, state, :dword)
+				return node.to_bin(scope, :dword)
 			else
 				raise "Invalid length: #{@size}"
 			end

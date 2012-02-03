@@ -2,11 +2,12 @@
 module Asm
 end
 class Asm::Code
-	def initialize(obj, entry_point, nmi_handler, irq_handler)
+	def initialize(scope, obj)
+		@scope = scope;
 		@obj = obj;
 	end
-	attr_accessor :obj
-	protected :obj
+	attr_accessor :scope, :obj
+	protected :scope, :obj
 	def save(fname)
 		File.binwrite(fname, to_a().pack("C*"))
 	end

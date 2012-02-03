@@ -6,7 +6,7 @@ rule
 	program:
 		| top_pseudo_operators routines
 		{
-			val[1].unshift Tree::RoutineNode.new('__top__'+randIdent(10)+'__', val[0]);
+			val[1].unshift Tree::RoutineNode.new(Tree::IdentiferNode.new('__top__'+randIdent(10)+'__'), val[0]);
 			result = val[1];
 		}
 		| routines

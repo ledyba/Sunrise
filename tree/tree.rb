@@ -4,19 +4,19 @@ end
 module ParserInner::Tree
 	class AbstractNode
 		def to_s
-			raise "Must implement"
+			raise "Must implement: #{self.class}"
 		end
-		def to_bin(scope, state)
-			raise "Must implement"
+		def to_bin(scope)
+			raise "Must implement: #{self.class}"
 		end
 		def inspect
-			raise "Must implement"
+			raise "Must implement: #{self.class}"
 		end
 	end
 
 	class OperatorNode < AbstractNode
-		def prepare(scope, state)
-			raise "Must implement"
+		def prepare(fairy)
+			raise "Must implement: #{self.class}"
 		end
 	end
 	class ExprNode < AbstractNode
@@ -27,10 +27,15 @@ module ParserInner::Tree
 	end
 
 	class ImmediateNode < ExprNode
-		def initialize(number_str, radix)
+		def initialize(number_str, radix = nil)
 			super(false);
-			@num = number_str.to_i(radix);
-			@str = number_str;
+			if radix.nil?
+				@num = number_str;
+				@str = number_str.to_s(10);
+			else
+				@num = number_str.to_i(radix);
+				@str = number_str;
+			end
 			unless is_dword
 				raise "Immediate: #{number_str} is too big for 6502."
 			end
@@ -41,7 +46,7 @@ module ParserInner::Tree
 		def to_i()
 			return @num;
 		end
-		def to_bin(scope, state, as = :word)
+		def to_bin(scope, as = :word)
 			if is_word() && as == :word
 				return [@num & 0xff];
 			elsif as == :dword
@@ -87,6 +92,13 @@ module ParserInner::Tree
 			raise "Invalid type" unless node.is_a? ExprNode
 			@nodes.unshift node;
 		end
+		def to_bin(scope)
+			obj = [];
+			for node in @nodes
+				obj += node.to_bin(scope)
+			end
+			return obj
+		end
 		def to_s
 			return "<ExprList: #{@nodes.inspect}";
 		end
@@ -103,15 +115,15 @@ module ParserInner::Tree
 				raise "Invalid type: #{op.class}" unless op.is_a? OperatorNode
 			}
 		end
-		def prepare(scope, state)
+		def prepare(fairy)
 			for op in @ops
-				op.prepare scope, state
+				op.prepare fairy
 			end
 		end
-		def to_bin(scope, state)
+		def to_bin(scope)
 			obj = [];
 			for op in @ops
-				obj += op.to_bin(scope, state)
+				obj += op.to_bin(scope)
 			end
 			return obj
 		end
@@ -126,6 +138,12 @@ module ParserInner::Tree
 		end
 		def inspect
 			return "Routine: \"#{@name}\" -> #{@ops.inspect}";
+		end
+		def fix_addr(addr)
+			@addr = addr
+		end
+		def to_addr
+			@addr;
 		end
 	end
 end

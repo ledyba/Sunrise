@@ -55,11 +55,11 @@ module ParserInner::Tree::Opcode
 				return "OP: #{@name}(0x#{@byte.to_s(16)}) #{@operand.inspect}"
 			end
 		end
-		def prepare(scope, state)
-			state.forward self.min_size,self.max_size
+		def prepare(fairy)
+			fairy.forward self.min_size,self.max_size
 		end
-		def to_bin(scope, state)
-			return [@byte, *@operand.to_bin(scope, state)]
+		def to_bin(scope)
+			return [@byte, *@operand.to_bin(scope)]
 		end
 	end
 	class JumpOpcode < AbstractOpcode
@@ -72,27 +72,39 @@ module ParserInner::Tree::Opcode
 			@byte = byte;
 			@operand = operand;
 		end
-		def prepare(scope, state)
-			if @operand.node.needResolve
-				state.forward self.min_size, self.min_size
-				dist = state.resolveDistance(@operand.node)
-				if !dist.nil? && -128 <= dist && dist <= 127
-				else
-					state.forward 0,self.max_size-self.min_size
-				end
+		def to_s
+			return inspect
+		end
+		def inspect
+			if @operand.nil?
+				return "OP: #{@name}(0x#{@byte.to_s(16)})"
 			else
-				state.forward self.min_size, self.min_size
+				return "OP: #{@name}(0x#{@byte.to_s(16)}) #{@operand.inspect}"
 			end
 		end
-		def to_bin(scope, state)
+		def prepare(fairy)
 			if @operand.node.needResolve
-				dist = state.resolveDistance(@operand.node);
-				if -128 <= dist && dist <= 127
-					return to_bin_raw(dist)
+				fairy.forward self.min_size, self.min_size
+				@dist = fairy.resolveDistance(@operand.node)
+				if !@dist.nil? && -128 <= @dist && @dist <= 127
+				else
+					fairy.forward 0,self.max_size-self.min_size
+				end
+			else
+				fairy.forward self.min_size, self.min_size
+			end
+		end
+		def to_bin(scope)
+			if @operand.node.needResolve
+				unless scope.has_routine? @operand.node
+					raise "Unkown routine: #{@operand.node}"
+				end
+				if -128 <= @dist && @dist <= 127
+					return to_bin_raw(@dist)
 				else
 					new_op = ParserInner::Tree::Opcode::create(JUMP_INVERT_TABLE[@name.to_sym], REPLACE_OP);
 					jmp_op = ParserInner::Tree::Opcode::create(:JMP, ParserInner::Tree::Operand::AbsoluteOperand.new(@operand.node));
-					return new_op.to_bin_raw(3) + jmp_op.to_bin(scope, state)
+					return new_op.to_bin_raw(3) + jmp_op.to_bin(scope)
 				end
 			else
 				return to_bin_raw(@operand.node.to_i()-self.min_size);
