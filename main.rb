@@ -2,11 +2,18 @@
 STDOUT.set_encoding( Encoding.locale_charmap, "UTF-8" )
 require 'logger'
 require File.dirname(__FILE__)+"/parser/parser.rb"
+require File.dirname(__FILE__)+"/asm/compiler.rb"
 
 def main(argv)
 	parser = Parser.new();
-	src = open(ARGV[0], "r:UTF-8").read;
-	p parser.parse(src);
+	compiler = ::Asm::Compiler.new();
+	ARGV.each(){|src|
+		open(src, "r:UTF-8"){|f|
+			treeList = parser.parse(f.read);
+			compiler.readTree(treeList);
+		}
+	}
+	compiler.compile().save("compiled.bin");
 end
 
 main(ARGV);

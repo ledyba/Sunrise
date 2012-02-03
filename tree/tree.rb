@@ -6,19 +6,16 @@ module ParserInner::Tree
 		def to_s
 			raise "Must implement"
 		end
+		def to_bin(scope)
+			raise "Must implement"
+		end
 		def inspect
 			raise "Must implement"
 		end
 	end
 
 	class OperatorNode < AbstractNode
-		def pre_eval(env, scope)
-			raise "Must implement"
-		end
-		def eval(env, scope)
-			raise "Must implement"
-		end
-		def post_eval(env, scope)
+		def prepare(scope)
 			raise "Must implement"
 		end
 	end
@@ -34,12 +31,36 @@ module ParserInner::Tree
 			super(false);
 			@num = number_str.to_i(radix);
 			@str = number_str;
+			unless is_dword
+				raise "Immediate: #{number_str} is too big for 6502."
+			end
 		end
 		def to_s()
 			return @str;
 		end
+		def to_i()
+			return @num;
+		end
+		def to_bin(scope, as = :word)
+			if is_word() && as == :word
+				return [@num & 0xff];
+			elsif as == :dword
+				return [@num & 0xff, (@num >> 8) & 0xff];
+			else
+				raise "Invalid bin type: #{as} for #{inspect()}"
+			end
+		end
+		def is_word()
+			return @num < 256;
+		end
+		def is_dword()
+			return @num < 65536;
+		end
 		def inspect()
 			return "<Immediate: #{@str}(#{@num})>";
+		end
+		def compile()
+			
 		end
 	end
 	class IdentiferNode < ExprNode
@@ -73,7 +94,7 @@ module ParserInner::Tree
 			to_s
 		end
 	end
-	class RoutineNode < AbstractNode
+	class RoutineNode < OperatorNode
 		def initialize(name, ops)
 			raise "Routine name must be specified" if name.nil?
 			@name = name;
@@ -81,6 +102,21 @@ module ParserInner::Tree
 			@ops.each{|op|
 				raise "Invalid type" unless op.is_a? OperatorNode
 			}
+		end
+		def prepare(scope)
+			for op in @ops
+				op.prepare scope
+			end
+		end
+		def to_bin(scope)
+			obj = [];
+			for op in @ops
+				obj += op.to_bin(scope)
+			end
+			return obj
+		end
+		def nameIdent
+			return @name
 		end
 		def to_s
 			return "Routine: #{@name.inspect}";

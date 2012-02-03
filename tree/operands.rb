@@ -8,19 +8,29 @@ module ParserInner::Tree::Operand
 	X = :X;
 	Y = :Y;
 	class AbstractOperand
-		def initialize(type, size)
+		def initialize(type, size, node)
 			@type = type
 			@size = size
+			@node = node;
 		end
-		attr_reader :type, :size
+		attr_reader :type, :size, :node
+		def to_s
+			@node.to_s
+		end
+		def to_bin(scope)
+			if @size == 1
+				return @node.to_bin(scope, :word)
+			elsif @size == 2
+				return @node.to_bin(scope, :dword)
+			else
+				raise "Invalid length: #{@size}"
+			end
+		end
 	end
 	class ImmediateOperand < AbstractOperand
 		def initialize(node)
-			super(:Immediate, 1);
+			super(:Immediate, 1, node);
 			@node = node;
-		end
-		def to_s
-			@node.to_s
 		end
 		def inspect
 			"{ImmOp: \"#{@node.inspect}\"}"
@@ -28,8 +38,7 @@ module ParserInner::Tree::Operand
 	end
 	class AbsoluteOperand < AbstractOperand
 		def initialize(node, register = nil)
-			super(:Absolute, 2);
-			@node = node;
+			super(:Absolute, 2, node);
 			@reg = register;
 			@type = (@type.to_s + @reg.to_s).to_sym() unless @reg.nil?
 		end
@@ -50,8 +59,7 @@ module ParserInner::Tree::Operand
 	end
 	class ZeropageOperand < AbstractOperand
 		def initialize(node, register = nil)
-			super(:Zeropage, 1);
-			@node = node;
+			super(:Zeropage, 1, node);
 			@reg = register;
 			@type = (@type.to_s + @reg.to_s).to_sym() unless @reg.nil?
 		end
@@ -72,8 +80,7 @@ module ParserInner::Tree::Operand
 	end
 	class IndirectOperand < AbstractOperand
 		def initialize(node, register = nil)
-			super(:Indirect, 1);
-			@node = node;
+			super(:Indirect, 1, node);
 			@reg = register;
 			@type = (@type.to_s + @reg.to_s).to_sym() unless @reg.nil?
 		end

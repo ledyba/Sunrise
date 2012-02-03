@@ -54,6 +54,12 @@ module ParserInner::Tree::Opcode
 				return "OP: #{@name}(0x#{@byte.to_s(16)}) #{@operand.inspect}"
 			end
 		end
+		def prepare(scope)
+			# do nothing
+		end
+		def to_bin(scope)
+			return [@byte, *@operand.to_bin(scope)]
+		end
 	end
 	class JumpOpcode < AbstractOpcode
 		def initialize(name, byte, operand)

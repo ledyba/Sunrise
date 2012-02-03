@@ -18,6 +18,12 @@ module ParserInner::Tree::PseudoOperator
 		def inspect
 			"CMD: #{@code.to_s} with #{@args.inspect}"
 		end
+		def prepare(scope)
+			#FIXME
+		end
+		def to_bin(scope)
+			[]
+		end
 	end
 end
 

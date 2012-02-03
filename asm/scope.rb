@@ -1,33 +1,30 @@
 # -*- encoding: utf-8 -*-
 module Asm
 end
-class Asm::Environment
+class Asm::Scope
 	def initialize()
 		@routines = [];
-		@routineIndex = {};
+		@routineIndexTable = {};
 		@constants = {};
 	end
-	def appendRoutine(routines)
+	attr_reader :routines
+	def appendRoutines(routines)
 		for routine in routines
-			if @routineIndex.has_key? routine.to_sym;
+			raise "Invalid type:#{routine.class}" unless routine.is_a? ::Parser::Tree::RoutineNode
+			if @routineIndexTable.has_key? routine.to_sym;
 				raise "Routine: \"#{routine}\" already defined.";
 			end
-			@routineIndex[routine.to_sym] = @routines.size
+			@routineIndexTable[routine.to_sym] = @routines.size
 			@routines << routine;
+			self.appendConstant(routine.nameIdent, routine);
 		end
-	end
-	def getRoutine(name)
-		unless @routineIndex.has_key? name
-			return nil;
-		end
-		return @routines[@routineIndex[name]];
 	end
 	def appendConstant(identifer, val)
 		if @constants.has_key? identifer.to_sym;
 			raise "Already defined: #{identifer}";
 		end
 		@constants[identifer.to_sym] = val;
-		return 
+		nil
 	end
 	def resovleConstant(identifer)
 		unless @constants.has_key? identifer.to_sym
@@ -40,5 +37,4 @@ class Asm::Environment
 			return  resolved;
 		end
 	end
-	
 end
