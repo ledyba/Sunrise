@@ -63,7 +63,6 @@ module ParserInner::Tree::Opcode
 		end
 	end
 	class JumpOpcode < AbstractOpcode
-		REPLACE_OP=::ParserInner::Tree::Operand::ImmediateOperand.new(::ParserInner::Tree::ImmediateNode.new("0", 16));
 		def initialize(name, byte, operand)
 			#最小：このジャンプ命令だけ
 			#最大：反転ジャンプ命令＋絶対ジャンプ
@@ -94,6 +93,7 @@ module ParserInner::Tree::Opcode
 				fairy.forward self.min_size, self.min_size
 			end
 		end
+		REPLACE_OP=::ParserInner::Tree::Operand::ImmediateOperand.new(::ParserInner::Tree::ImmediateNode::ZERO);
 		def to_bin(scope)
 			if @operand.node.needResolve
 				unless scope.has_routine? @operand.node

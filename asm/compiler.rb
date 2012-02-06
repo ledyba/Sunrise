@@ -36,6 +36,7 @@ class Asm::Compiler
 			obj += robj;
 		end
 		codeList = [::Asm::Nes::Code.new(@scope, obj)]
-		return ::Asm::Nes::Linker.new(codeList, nil);
+		resList = [File.binread("font.chr").unpack("C*")]; #FIXME:
+		return ::Asm::Nes::Linker.new(codeList, resList);
 	end
 end

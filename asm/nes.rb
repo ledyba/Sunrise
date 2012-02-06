@@ -62,7 +62,7 @@ class Asm::Nes::Linker < ::Asm::Linker
 		super
 		@header = NES_HEADER.dup;
 		@header << @codeList.size*2; #FIXME: とりあえず動けばいいやの世界…
-		@header << @resList.size*2;
+		@header << @resList.size*1;
 		@header += [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
 		@rom = @header.dup;
 		for code in @codeList

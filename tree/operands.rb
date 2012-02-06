@@ -12,6 +12,7 @@ module ParserInner::Tree::Operand
 			@type = type
 			@size = size
 			@node = node;
+			raise "Invalid node:#{node.class}" unless node.nil? or node.is_a? ::ParserInner::Tree::OperandArgNode
 		end
 		attr_reader :type, :size, :node
 		def to_s

@@ -29,7 +29,7 @@ class Asm::Scope
 		@fairy.freeze
 		for routine in @routines
 			addr = @fairy.resolveOffset(routine)+@code_base
-			imm_node = ::ParserInner::Tree::ImmediateNode.new(addr);
+			imm_node = ::ParserInner::Tree::ImmediateNode.new(addr.to_s(16), addr.to_s(16), 16);
 			appendConstant(routine.nameIdent, imm_node);
 			@routineAddrTable[routine.to_sym] = addr
 			routine.fix_addr(addr)
@@ -66,6 +66,7 @@ end
 class Asm::RoutineFairy
 	def initialize(scope)
 		@scope = scope;
+		@path = 1;
 		@minOffset = 0;
 		@maxOffset = 0;
 		@tempRoutineMinOffsets = {};
@@ -98,10 +99,11 @@ class Asm::RoutineFairy
 		end
 		return @tempRoutineMaxOffsets[routine.to_sym];
 	end
-	def reset
+	def reset()
+		@path+=1;
 		@minOffset = 0;
 		@maxOffset = 0;
 	end
-	attr_reader :minOffset, :maxOffset
+	attr_reader :minOffset, :maxOffset, :path, :scope
 end
 

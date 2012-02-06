@@ -5,15 +5,16 @@ RACC="racc"
 
 SRCS = FileList["**/*.racc"]
 GENS = SRCS.ext("rb");
-task :default => "test"
+task :default => "hello"
 
 desc "build and test, default"
-task "test" => GENS do
-	ruby "main.rb", "test.asm"
+task "hello" => GENS do
+	ruby "main.rb", "hello.asm"
+	#sh "../Cycloa/Release/Cycloa.exe compiled.nes"
 end
 
-desc "clean builds, then test"
-task "reload" => ["clean", "test"]
+desc "clean builds, then Hello world!"
+task "reload" => ["clean", "hello"]
 
 CLEAN.include(GENS)
 

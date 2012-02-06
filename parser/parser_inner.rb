@@ -27,16 +27,18 @@ module ParserInner
 				if @tokens.last.first != :EOL
 					@tokens.push [:EOL, :EOL]
 				end
-			when ss.scan(/0x(\d+)/)
-				@tokens.push [:HEX_NUMBER, ss[0]]
-			when ss.scan(/0b(\d+)/)
-				@tokens.push [:BIN_NUMBER, ss[0]]
+			when ss.scan(/0x([\da-fA-F]+)/)
+				@tokens.push [:HEX_NUMBER, ss[1]]
+			when ss.scan(/0b([01]+)/)
+				@tokens.push [:BIN_NUMBER, ss[1]]
 			when ss.scan(/\d+/)
 				@tokens.push [:DECI_NUMBER, ss[0]]
 			when ss.scan(/[Xx]/)
 				@tokens.push [:REG_X, :REG_X]
 			when ss.scan(/[Yy]/)
 				@tokens.push [:REG_Y, :REG_Y]
+			when ss.scan(/\"([ ,\.\w\!\$\%\&\*\+\-\\\/\?@^_~]+)\"/)
+				@tokens.push [:STRING, ss[1].to_s]
 			when ss.scan(/[\w\$\%\&\*\+\-\\\/\?@^_~]+/)
 				@tokens.push [:IDENT, ss[0].to_sym]
 			else
