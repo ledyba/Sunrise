@@ -177,16 +177,16 @@ module ParserInner::Tree::Opcode
 		},
 		:ADC => 
 		{
-			:Immediate => 0x29,
-			:Zeropage  => 0x25,
-			:ZeropageX => 0x35,
+			:Immediate => 0x69,
+			:Zeropage  => 0x65,
+			:ZeropageX => 0x75,
 			:ZeropageY => nil,
-			:Absolute  => 0x2D,
-			:AbsoluteX => 0x3D,
-			:AbsoluteY => 0x39,
+			:Absolute  => 0x6D,
+			:AbsoluteX => 0x7D,
+			:AbsoluteY => 0x79,
 			:Indirect  => nil,
-			:IndirectX => 0x21,
-			:IndirectY => 0x31,
+			:IndirectX => 0x61,
+			:IndirectY => 0x71,
 			:nil => nil
 		},
 		:AND => 

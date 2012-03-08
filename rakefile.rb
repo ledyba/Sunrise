@@ -13,6 +13,11 @@ task "hello" => GENS do
 	#sh "../Cycloa/Release/Cycloa.exe compiled.nes"
 end
 
+task "glpgs" => GENS do
+	ruby "main.rb", "glpgs.asm"
+	sh "../Cycloa/Release/Cycloa.exe compiled.nes"
+end
+
 desc "clean builds, then Hello world!"
 task "reload" => ["clean", "hello"]
 

@@ -37,8 +37,16 @@ module ParserInner
 				@tokens.push [:REG_X, :REG_X]
 			when ss.scan(/[Yy]/)
 				@tokens.push [:REG_Y, :REG_Y]
-			when ss.scan(/\"([ ,\.\w\!\$\%\&\*\+\-\\\/\?@^_~]+)\"/)
-				@tokens.push [:STRING, ss[1].to_s]
+			when ss.scan(/\"([\d ,\.\w\!\$\%\&\*\+\-\\\/\?@^_~]+)\"/)
+				_str = ss[1].gsub(/\\([0-9a-fA-F]+)/){ |str|
+					num = str.gsub(/\\([0-9a-fA-F]+)/, "\\1").to_i(16);
+					pack = "" << num;
+				}
+				_str.gsub!("\\n", "\n")
+				_str.gsub!("\\r", "\r")
+				_str.gsub!("\\s", "\s")
+				_str.gsub!("\\t", "\t")
+				@tokens.push [:STRING, _str];
 			when ss.scan(/[\w\$\%\&\*\+\-\\\/\?@^_~]+/)
 				@tokens.push [:IDENT, ss[0].to_sym]
 			else

@@ -1,3 +1,5 @@
 parser/parser.rb
-**/*.nes
+**/*.dll
+*.dll
 **/*.deb
+*.deb

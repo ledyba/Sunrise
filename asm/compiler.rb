@@ -18,13 +18,16 @@ class Asm::Compiler
 			fairy.start(routine);
 			routine.prepare(fairy)
 		end
-		@scope.fairy.reset
-		for routine in @scope.routines
-			fairy.start(routine);
-			routine.prepare(fairy)
+		for i in 1..2
+			@scope.fairy.reset
+			for routine in @scope.routines
+				fairy.start(routine);
+				routine.prepare(fairy)
+			end
 		end
 		@scope.fixRoutines();
 		obj = [];
+		_total_size = 0;
 		for routine in @scope.routines
 			offset = @scope.fairy.resolveOffset(routine);
 			delta = offset - obj.size;
@@ -32,9 +35,11 @@ class Asm::Compiler
 				raise "[BUG] FIXME delta: #{delta}"
 			end
 			robj = routine.to_bin(@scope);
-			puts "#{routine.to_s} size: #{robj.size}"
+			puts "#{routine.to_s} size: #{robj.size} bytes"
+			_total_size+=robj.size;
 			obj += robj;
 		end
+		puts "total size: #{_total_size} bytes"
 		codeList = [::Asm::Nes::Code.new(@scope, obj)]
 		resList = [File.binread("font.chr").unpack("C*")]; #FIXME:
 		return ::Asm::Nes::Linker.new(codeList, resList);
