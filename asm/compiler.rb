@@ -12,16 +12,20 @@ class Asm::Compiler
 	def <<(tree_list)
 		@scope << tree_list;
 	end
+	def fix()
+		fairy = @scope.fairy;
+		puts "fixing..."
+		@scope.fairy.reset
+		for routine in @scope.routines
+			fairy.start(routine);
+			routine.prepare(fairy)
+		end
+	end
 	def compile()
 		begin
-			fairy = @scope.fairy;
-			puts "fixing..."
-			@scope.fairy.reset
-			for routine in @scope.routines
-				fairy.start(routine);
-				routine.prepare(fairy)
-			end
+			fix();
 		end while !@scope.fairy.allFixed;
+		fix()
 		@scope.fixRoutines();
 		obj = [];
 		_total_size = 0;
