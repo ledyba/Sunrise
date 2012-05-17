@@ -4,6 +4,9 @@ module ParserInner
 end
 module ParserInner::Tree
 end
+=begin
+	アドレッシングモードを抽象化する、オペランドノード。
+=end
 module ParserInner::Tree::Operand
 	X = :X;
 	Y = :Y;

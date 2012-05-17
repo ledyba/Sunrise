@@ -66,7 +66,7 @@ end
 class Asm::RoutineFairy
 	def initialize(scope)
 		@scope = scope;
-		@path = 1;
+		@pass = 0;
 		@minOffset = 0;
 		@maxOffset = 0;
 		@tempRoutineMinOffsets = {};
@@ -100,10 +100,21 @@ class Asm::RoutineFairy
 		return @tempRoutineMaxOffsets[routine.to_sym];
 	end
 	def reset()
-		@path+=1;
+		@pass+=1;
 		@minOffset = 0;
 		@maxOffset = 0;
 	end
-	attr_reader :minOffset, :maxOffset, :path, :scope
+	def allFixed()
+		if @minOffset != @maxOffset
+			return false
+		end
+		@tempRoutineMinOffsets.each_pair { |key,val|
+			if @tempRoutineMaxOffsets[key] != val
+				return false
+			end
+		}
+		return true;
+	end
+	attr_reader :minOffset, :maxOffset, :pass, :scope
 end
 

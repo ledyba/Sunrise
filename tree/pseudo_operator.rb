@@ -4,6 +4,9 @@ module ParserInner
 end
 module ParserInner::Tree
 end
+=begin
+	擬似命令の構文木
+=end
 module ParserInner::Tree::PseudoOperator
 	class AbstractPseudoOperator < ::ParserInner::Tree::OperatorNode
 	end

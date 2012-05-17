@@ -13,18 +13,15 @@ class Asm::Compiler
 		@scope << tree_list;
 	end
 	def compile()
-		fairy = @scope.fairy;
-		for routine in @scope.routines
-			fairy.start(routine);
-			routine.prepare(fairy)
-		end
-		for i in 1..2
+		begin
+			fairy = @scope.fairy;
+			puts "fixing..."
 			@scope.fairy.reset
 			for routine in @scope.routines
 				fairy.start(routine);
 				routine.prepare(fairy)
 			end
-		end
+		end while !@scope.fairy.allFixed;
 		@scope.fixRoutines();
 		obj = [];
 		_total_size = 0;
@@ -35,7 +32,7 @@ class Asm::Compiler
 				raise "[BUG] FIXME delta: #{delta}"
 			end
 			robj = routine.to_bin(@scope);
-			puts "#{routine.to_s} size: #{robj.size} bytes"
+			puts "#{routine.to_s} size: #{robj.size} bytes, offset: 0x#{offset.to_s(16)}"
 			_total_size+=robj.size;
 			obj += robj;
 		end

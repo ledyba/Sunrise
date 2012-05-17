@@ -36,7 +36,7 @@ module ParserInner::Tree::PseudoOperator
 				@value = @exprList[1]
 			end
 			def prepare(fairy)
-				if fairy.path <= 1
+				if fairy.pass <= 1
 					fairy.scope.appendConstant(@key, @value);
 				end
 			end
@@ -48,12 +48,14 @@ module ParserInner::Tree::PseudoOperator
 			def init()
 			end
 			def prepare(fairy)
-				if fairy.path > 1
+				if fairy.pass > 1
 					@obj = [];
 					for expr in @exprList
 						@obj += expr.to_bin(fairy.scope);
 					end
 					fairy.forward(@obj.size, @obj.size)
+				else
+					fairy.forward(0, 0xffff)
 				end
 			end
 			def to_bin(scope)

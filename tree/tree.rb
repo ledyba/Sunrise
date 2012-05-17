@@ -4,19 +4,19 @@ end
 module ParserInner::Tree
 	class AbstractNode
 		def to_s
-			raise "Must implement: #{self.class}"
+			raise "Must be implemented: #{self.class}"
 		end
 		def to_bin(scope)
-			raise "Must implement: #{self.class}"
+			raise "Must be implemented: #{self.class}"
 		end
 		def inspect
-			raise "Must implement: #{self.class}"
+			raise "Must be implemented: #{self.class}"
 		end
 	end
 
 	class OperatorNode < AbstractNode
 		def prepare(fairy)
-			raise "Must implement: #{self.class}"
+			raise "Must be implemented: #{self.class}"
 		end
 	end
 	class ExprNode < AbstractNode

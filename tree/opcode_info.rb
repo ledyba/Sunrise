@@ -6,6 +6,9 @@ end
 module ParserInner::Tree
 end
 module ParserInner::Tree::Opcode
+=begin
+	各命令のアドレッシングモード別のオペコードを格納。nilの場合は存在しない事を示す。
+=end
 	NORMAL_OPCODE_TABLE = {
 		:LDA => 
 		{
@@ -681,6 +684,9 @@ module ParserInner::Tree::Opcode
 			:nil => nil
 		},
 	};
+=begin
+	ジャンプ命令だけ別で処理する。
+=end
 	JUMP_OPCODE_TABLE={
 		:BCC => 
 		{
@@ -715,6 +721,11 @@ module ParserInner::Tree::Opcode
 			:Immediate => 0x70,
 		}
 	};
+=begin
+	各命令の判定を逆転した命令は何か？を管理するテーブル
+	条件分岐命令は+/-128の相対ジャンプしか行えないため、絶対ジャンプ命令に置き換える際は
+	反転させて無条件・絶対ジャンプ命令を使わなければならない。
+=end
 	JUMP_INVERT_TABLE = {
 		:BCC => :BCS,
 		:BCS => :BCC,

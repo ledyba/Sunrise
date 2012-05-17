@@ -7,6 +7,9 @@ end
 module ParserInner::Tree
 end
 module ParserInner::Tree::Opcode
+=begin
+	オペコードの名前とオペランドから、オペコードの構文木を作成する。
+=end
 	def self.create(name, operand)
 		upper_sym = name.to_s.upcase.to_sym;
 		op_type = operand.type
@@ -27,7 +30,9 @@ module ParserInner::Tree::Opcode
 			return JumpOpcode.new(upper_sym, table[op_type], operand);
 		end
 	end
-
+=begin
+	すべてのオペコード・構文ノードの親クラス
+=end
 	class AbstractOpcode < ::ParserInner::Tree::OperatorNode
 		def initialize(type, min_size, max_size)
 			@type = type;
@@ -36,10 +41,12 @@ module ParserInner::Tree::Opcode
 		end
 		attr_reader :type, :max_size, :min_size;
 	end
-
+=begin
+	分岐・ジャンプ命令以外の普通のオペコード
+=end
 	class NormalOpcode < AbstractOpcode
 		def initialize(name, byte, operand)
-			#命令は増減しない。
+			#命令は増減しない。オペランドの長さに、オペコードの分１バイトが加算される。
 			super(:normal, operand.size+1, operand.size+1);
 			@name = name;
 			@byte = byte;
@@ -62,6 +69,9 @@ module ParserInner::Tree::Opcode
 			return [@byte, *@operand.to_bin(scope)]
 		end
 	end
+=begin
+	ジャンプ命令は相対・絶対書き換えが発生する可能性があるので、別扱い。
+=end
 	class JumpOpcode < AbstractOpcode
 		def initialize(name, byte, operand)
 			#最小：このジャンプ命令だけ
@@ -86,8 +96,9 @@ module ParserInner::Tree::Opcode
 				fairy.forward self.min_size, self.min_size
 				@dist = fairy.resolveDistance(@operand.node)
 				if !@dist.nil? && -128 <= @dist && @dist <= 127
-				else
-					fairy.forward 0,self.max_size-self.min_size
+					fairy.forward 0, 0
+				else #まだ確定できない
+					fairy.forward 0, self.max_size-self.min_size
 				end
 			else
 				fairy.forward self.min_size, self.min_size
