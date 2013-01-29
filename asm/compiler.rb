@@ -21,7 +21,7 @@ class Asm::Compiler
 			routine.prepare(fairy)
 		end
 	end
-	def compile()
+	def compile(chrfilename)
 		begin
 			fix();
 		end while !@scope.fairy.allFixed;
@@ -42,7 +42,7 @@ class Asm::Compiler
 		end
 		puts "total size: #{_total_size} bytes"
 		codeList = [::Asm::Nes::Code.new(@scope, obj)]
-		resList = [File.binread("font.chr").unpack("C*")]; #FIXME:
+		resList = [File.binread(chrfilename).unpack("C*")]; #FIXME:
 		return ::Asm::Nes::Linker.new(codeList, resList);
 	end
 end

@@ -8,12 +8,12 @@ require File.dirname(__FILE__)+"/asm/nes.rb"
 def main(argv)
 	parser = Parser.new();
 	compiler = ::Asm::Compiler.new(::Asm::Nes);
-	ARGV.each(){|src|
+	ARGV[0..-3].each(){|src|
 		open(src, "r:UTF-8"){|f|
 			compiler << parser.parse(f.read);
 		}
 	};
-	compiler.compile().save("compiled.nes");
+	compiler.compile(ARGV[-2]).save(ARGV[-1]);
 end
 
 main(ARGV);
