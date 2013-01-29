@@ -7,7 +7,7 @@ Sunrise supports only **"Mapper 0"** now.
 
 sample
 ======
-Please see __roms__ for real samples.
+Please see **"__roms__"** directory for samples.
 
 
 LICENSE
